@@ -1,1 +1,1 @@
-The automated parking assistance
+The automated parking assistance which installed on the front of the Parking Lot, will automatically detect the Vehicle and then scan the license plate. This Daemon is an console for the OPENALPR processes running in the background. Run the python script named PayNPark-Daemon.py.
