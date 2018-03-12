@@ -23,7 +23,7 @@ config = {
     "authDomain": "paynpark-a72b6.firebaseapp.com",
     "databaseURL": "https://paynpark-a72b6.firebaseio.com",
     "storageBucket": "paynpark-a72b6.appspot.com",
-    "serviceAccount": "/home/pi/Desktop/projectapas/firebase/PayNPark-31d19785cc09.json"
+    "serviceAccount": "/home/pi/Desktop/PayNPark-Daemon/firebase/PayNPark-31d19785cc09.json"
 }
 firebase = pyrebase.initialize_app(config)
 db=firebase.database()
@@ -54,13 +54,23 @@ while True:
             for key in plates_info:
                 if key == "best_plate_number":
                     # pprint (plates_info)
+                    flag=0
                     print plates_info[key]
                     plate_number.append(plates_info[key])
-
-
+                    #### Retrival ka code
+                    all_agents = db.child("users").get(user['idToken']).val()
+                    dictlist=[]
+                    dct=OrderedDict(all_agents)
+                    for u_key, data in dct.iteritems():
+                        if(str(data["plate_number"])==plates_info[key]):
+                            flag=1
+                            print str(data["name"])
+                            t={"Timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S"),"Number_plate": plates_info[key],"Name":data["name"]}
+                            db.child("log").push(t,user['idToken'])
+                    if(flag==0):
                     ##### Put in firebase
-                    t = {"Name": now, "Value": str(plates_info[key])}
-                    db.child("scanned_plate").push(t, user['idToken'])
+                        t = {"Name": now, "Value": str(plates_info[key])}
+                        db.child("scanned_plate").push(t, user['idToken'])
                     print "This is a group result"
         elif plates_info['data_type'] == 'heartbeat':
             print "This is a heartbeat"
